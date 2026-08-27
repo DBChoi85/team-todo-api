@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from app.main import app
+from app.main import app, todos
 
 client = TestClient(app)
 
@@ -64,3 +64,26 @@ def test_create_todo():
     assert data["title"] == "Prepare lecture"
     assert data["completed"] is False
     assert isinstance(data["id"], int)
+
+def test_create_todo_when_list_is_empty():
+    original_todos = todos.copy()
+
+    try:
+        todos.clear()
+
+        response = client.post(
+            "/todos",
+            json={"title": "First Todo"}
+        )
+
+        assert response.status_code == 201
+
+        data = response.json()
+
+        assert data["id"] == 1
+        assert data["title"] == "First Todo"
+        assert data["completed"] is False
+
+    finally:
+        todos.clear()
+        todos.extend(original_todos)

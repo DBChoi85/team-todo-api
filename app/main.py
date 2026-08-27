@@ -40,6 +40,7 @@ def get_todos():
 
 @app.post("/todos", response_model=Todo, status_code=201)
 def create_todo(todo: TodoCreate):
-    new_todo = Todo(id=max(item.id for item in todos) + 1, title=todo.title, completed=False)
+    next_id = max((item.id for item in todos), default=0) + 1
+    new_todo = Todo(id=next_id, title=todo.title, completed=False)
     todos.append(new_todo)
     return new_todo
