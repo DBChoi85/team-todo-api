@@ -12,7 +12,7 @@ class Todo(BaseModel):
     comleted: bool
 
 todos = [
-        Todo(id=1, title="Learn Github", completed=False),
+        Todo(id=1, title="Learn GitHub", completed=False),
         Todo(id=2, title="Build Todo API", completed=Fase),
         ]
 
