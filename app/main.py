@@ -9,11 +9,11 @@ app = FastAPI(
 class Todo(BaseModel):
     id: int
     title: str
-    comleted: bool
+    completed: bool
 
 todos = [
         Todo(id=1, title="Learn GitHub", completed=False),
-        Todo(id=2, title="Build Todo API", completed=Fase),
+        Todo(id=2, title="Build Todo API", completed=False),
         ]
 
 
