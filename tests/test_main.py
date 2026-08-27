@@ -149,3 +149,5 @@ def test_delete_nonexistent_todo():
     assert response.status_code == 404
     assert response.json()["detail"] == "Todo not found"
 
+def test_ci_failure_demo():
+    assert 1 == 2
