@@ -1,7 +1,19 @@
+import pytest
 from fastapi.testclient import TestClient
+
 from app.main import app, todos
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def reset_todos():
+    original_todos = todos.copy()
+
+    yield
+
+    todos.clear()
+    todos.extend(original_todos)
 
 def test_get_todos():
     response = client.get("todos")
@@ -66,27 +78,20 @@ def test_create_todo():
     assert isinstance(data["id"], int)
 
 def test_create_todo_when_list_is_empty():
-    original_todos = todos.copy()
+    todos.clear()
 
-    try:
-        todos.clear()
+    response = client.post(
+        "/todos",
+        json={"title": "First Todo"}
+    )
 
-        response = client.post(
-            "/todos",
-            json={"title": "First Todo"}
-        )
+    assert response.status_code == 201
 
-        assert response.status_code == 201
+    data = response.json()
 
-        data = response.json()
-
-        assert data["id"] == 1
-        assert data["title"] == "First Todo"
-        assert data["completed"] is False
-
-    finally:
-        todos.clear()
-        todos.extend(original_todos)
+    assert data["id"] == 1
+    assert data["title"] == "First Todo"
+    assert data["completed"] is False
 
 def test_update_todo():
     response = client.put(
@@ -125,6 +130,21 @@ def test_update_nonexistent_todo():
             "completed": True
         }
     )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Todo not found"
+
+def test_delete_todo():
+    todo_id = todos[0].id
+
+    response = client.delete(f"/todos/{todo_id}")
+
+    assert response.status_code == 204
+    assert response.content == b""
+    assert all(todo.id != todo_id for todo in todos)
+
+def test_delete_nonexistent_todo():
+    response = client.delete("/todos/999")
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Todo not found"
