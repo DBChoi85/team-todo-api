@@ -6,27 +6,8 @@ app = FastAPI(
         version = "0.1.0"
         )
 
-class Todo(BaseModel):
-    id: int
+class TodoBase(BaseModel):
     title: str
-    completed: bool
-
-class TodoCreate(BaseModel):
-    title: str
-
-    @field_validator("title")
-    @classmethod
-    def validate_title(cls, value: str) -> str:
-        value = value.strip()
-
-        if not value:
-            raise ValueError("Title must not be empty")
-
-        return value
-
-class TodoUpdate(BaseModel):
-    title: str
-    completed: bool
 
     @field_validator("title")
     @classmethod
@@ -37,6 +18,19 @@ class TodoUpdate(BaseModel):
             raise ValueError("title must not be empty")
 
         return value
+
+
+class Todo(TodoBase):
+    id: int
+    completed: bool
+
+
+class TodoCreate(TodoBase):
+    pass
+
+
+class TodoUpdate(TodoBase):
+    completed: bool
 
 todos = [
         Todo(id=1, title="Learn GitHub", completed=False),
