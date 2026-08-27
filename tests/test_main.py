@@ -23,3 +23,44 @@ def test_get_todos():
     assert isinstance(todo["title"], str)
     assert isinstance(todo["completed"], bool)
 
+def test_create_todo():
+    response = client.post("/todos", json={"title": "Prepare lecture"})
+
+    assert response.status_code == 201
+
+    data = response.json()
+
+    assert data["title"] == "Prepare lecture"
+    assert data["completed"] is False
+    assert isinstance(data["id"], int)
+
+
+def test_create_todo_with_empty_title():
+    response = client.post(
+        "/todos",
+        json={"title": ""}
+    )
+
+    assert response.status_code == 422
+
+def test_create_todo_with_blank_title():
+    response = client.post(
+        "/todos",
+        json={"title": "     "}
+    )
+
+    assert response.status_code == 422
+
+def test_create_todo():
+    response = client.post(
+        "/todos",
+        json={"title": "Prepare lecture"}
+    )
+
+    assert response.status_code == 201
+
+    data = response.json()
+
+    assert data["title"] == "Prepare lecture"
+    assert data["completed"] is False
+    assert isinstance(data["id"], int)
