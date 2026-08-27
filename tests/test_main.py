@@ -128,3 +128,26 @@ def test_update_nonexistent_todo():
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Todo not found"
+
+
+def test_delete_todo():
+    original_todos = todos.copy()
+
+    try:
+        todo_id = todos[0].id
+
+        response = client.delete(f"/todos/{todo_id}")
+
+        assert response.status_code == 204
+        assert response.content == b""
+        assert all(todo.id != todo_id for todo in todos)
+
+    finally:
+        todos.clear()
+        todos.extend(original_todos)
+
+def test_delete_nonexistent_todo():
+    response = client.delete("/todos/999")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Todo not found"
