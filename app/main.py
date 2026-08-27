@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, field_validator
 
 app = FastAPI(
@@ -24,6 +24,20 @@ class TodoCreate(BaseModel):
 
         return value
 
+class TodoUpdate(BaseModel):
+    title: str
+    completed: bool
+
+    @field_validator("title")
+    @classmethod
+    def validate_title(cls, value: str) -> str:
+        value = value.strip()
+
+        if not value:
+            raise ValueError("title must not be empty")
+
+        return value
+
 todos = [
         Todo(id=1, title="Learn GitHub", completed=False),
         Todo(id=2, title="Build Todo API", completed=False),
@@ -44,3 +58,22 @@ def create_todo(todo: TodoCreate):
     new_todo = Todo(id=next_id, title=todo.title, completed=False)
     todos.append(new_todo)
     return new_todo
+
+@app.put("/todos/{todo_id}", response_model=Todo)
+def update_todo(todo_id: int, todo: TodoUpdate):
+    for index, existing_todo in enumerate(todos):
+        if existing_todo.id == todo_id:
+            updated_todo = Todo(
+                id=todo_id,
+                title=todo.title,
+                completed=todo.completed
+            )
+
+            todos[index] = updated_todo
+
+            return updated_todo
+
+    raise HTTPException(
+        status_code=404,
+        detail="Todo not found"
+    )

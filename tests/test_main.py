@@ -87,3 +87,44 @@ def test_create_todo_when_list_is_empty():
     finally:
         todos.clear()
         todos.extend(original_todos)
+
+def test_update_todo():
+    response = client.put(
+        "/todos/1",
+        json={
+            "title": "Learn GitHub Actions",
+            "completed": True
+        }
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["id"] == 1
+    assert data["title"] == "Learn GitHub Actions"
+    assert data["completed"] is True
+
+def test_update_nonexistent_todo():
+    response = client.put(
+        "/todos/999",
+        json={
+            "title": "Unknown Todo",
+            "completed": True
+        }
+    )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Todo not found"
+
+def test_update_nonexistent_todo():
+    response = client.put(
+        "/todos/999",
+        json={
+            "title": "Unknown Todo",
+            "completed": True
+        }
+    )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Todo not found"
