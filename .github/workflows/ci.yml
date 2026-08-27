@@ -30,3 +30,14 @@ jobs:
       - name: Run tests
         run: |
           pytest
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t team-todo-api:${{ github.sha }} .
+  
