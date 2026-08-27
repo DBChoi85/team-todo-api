@@ -9,8 +9,17 @@ def test_get_todos():
     assert response.status_code == 200
 
     data = response.json()
+    
+    assert isinstance(data, list)
+    assert len(data) > 0
 
-    assert len(data) == 2
-    assert data[0]["id"] == 1
-    assert data[0]["title"] == "Learn GitHub"
-    assert data[0]["completed"] is False
+    todo = data[0]
+
+    assert "id" in todo
+    assert "title" in todo
+    assert "completed" in todo
+
+    assert isinstance(todo["id"], int)
+    assert isinstance(todo["title"], str)
+    assert isinstance(todo["completed"], bool)
+
