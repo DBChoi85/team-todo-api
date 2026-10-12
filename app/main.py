@@ -83,3 +83,7 @@ def delete_todo(todo_id: int):
         status_code=404,
         detail="Todo not found"
     )
+
+def hello():
+    return "Hello, World!"
+
